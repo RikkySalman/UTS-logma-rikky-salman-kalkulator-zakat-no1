@@ -1,0 +1,168 @@
+<html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Zakat Mal (Level 1)</title>
+    <!-- Load Tailwind CSS untuk styling yang responsif dan cepat -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Mengatur font utama dan memastikan kalkulator di tengah */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .card {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 5px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .btn-primary {
+            transition: transform 0.1s ease-in-out, background-color 0.1s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            background-color: #1ad1db;
+        }
+        .input-style {
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        .input-style:focus {
+            border-color: #3bf6ae;
+            box-shadow: 0 0 0 3px rgba(59, 246, 156, 0.5);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div id="app" class="w-full max-w-lg bg-white card rounded-xl p-6 md:p-8">
+        <header class="text-center mb-6 md:mb-8">
+            <h1 class="text-3xl font-extrabold text-blue-800">Kalkulator Zakat Mal</h1>
+            <p class="text-sm text-gray-500 mt-1">Level 1: Zakat Harta (Mal) Sederhana</p>
+        </header>
+
+        <!-- Formulir Input Zakat -->
+        <div class="space-y-4">
+            <!-- Input Harga Emas per Gram -->
+            <div>
+                <label for="goldPrice" class="block text-sm font-medium text-gray-700 mb-1">Harga Emas Murni/Gram (IDR)</label>
+                <input type="number" id="goldPrice" placeholder="Contoh: 1200000"
+                       class="input-style w-full p-3 border border-gray-300 rounded-lg focus:outline-none"
+                       value="1200000" required>
+                <p class="text-xs text-gray-400 mt-1">Gunakan harga emas hari ini untuk menghitung nisab.</p>
+            </div>
+
+            <!-- Input Total Tabungan/Aset -->
+            <div>
+                <label for="savings" class="block text-sm font-medium text-gray-700 mb-1">Total Nilai Tabungan/Aset (IDR)</label>
+                <input type="number" id="savings" placeholder="Masukkan total tabungan/aset"
+                       class="input-style w-full p-3 border border-gray-300 rounded-lg focus:outline-none"
+                       value="150000000" required>
+                <p class="text-xs text-gray-400 mt-1">Harta yang telah tersimpan selama 1 tahun (haul).</p>
+            </div>
+
+            <!-- Tombol Hitung -->
+            <button onclick="calculateZakatMal()"
+                    class="btn-primary w-full bg-blue-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-700 mt-6">
+                Hitung Zakat
+            </button>
+        </div>
+
+        <!-- Area Hasil -->
+        <div id="results" class="mt-8 pt-6 border-t border-gray-200 hidden">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 text-center">Hasil Perhitungan Zakat Mal</h2>
+            
+            <div id="zakatStatus" class="p-4 rounded-lg text-center mb-4">
+                <!-- Status akan ditampilkan di sini -->
+            </div>
+
+            <div class="space-y-3">
+                <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                    <span class="text-sm font-medium text-gray-600">Nisab (Batas Wajib Zakat / 85 Gram Emas):</span>
+                    <span id="nisabValue" class="text-base font-bold text-gray-800"></span>
+                </div>
+                <div class="flex justify-between items-center bg-blue-50 p-3 rounded-lg">
+                    <span class="text-sm font-medium text-blue-700">Jumlah Zakat yang Wajib Dibayarkan (2.5%):</span>
+                    <span id="zakatDue" class="text-xl font-extrabold text-blue-900"></span>
+                </div>
+            </div>
+            
+            <p class="text-xs text-center text-gray-500 mt-4">*Perhitungan menggunakan nisab 85 gram emas.</p>
+        </div>
+
+    </div>
+
+    <script>
+        // Nisab emas standar untuk Zakat Mal (dalam gram)
+        const NISAB_GOLD_GRAMS = 85;
+
+        /**
+         * Mengubah angka menjadi format mata uang Rupiah (IDR).
+         * @param {number} number Angka yang akan diformat.
+         * @returns {string} String dalam format IDR.
+         */
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(number);
+        }
+
+        /**
+         * Fungsi utama untuk menghitung Zakat Mal.
+         */
+        function calculateZakatMal() {
+            const goldPriceInput = document.getElementById('goldPrice').value;
+            const savingsInput = document.getElementById('savings').value;
+
+            // Pastikan input adalah angka dan tidak kosong
+            const goldPrice = parseFloat(goldPriceInput) || 0;
+            const savings = parseFloat(savingsInput) || 0;
+
+            const resultsDiv = document.getElementById('results');
+            const nisabValueSpan = document.getElementById('nisabValue');
+            const zakatDueSpan = document.getElementById('zakatDue');
+            const zakatStatusDiv = document.getElementById('zakatStatus');
+
+            // 1. Hitung Nisab (85 gram emas * harga emas per gram)
+            const nisabValue = NISAB_GOLD_GRAMS * goldPrice;
+
+            // 2. Tentukan Kewajiban Zakat
+            let zakatDue = 0;
+            let statusMessage = "";
+            let statusClass = "";
+            let isWajib = false;
+
+            if (savings >= nisabValue) {
+                // Zakat Wajib: 2.5% dari total tabungan/aset
+                zakatDue = savings * 0.025;
+                statusMessage = "SELAMAT! Anda Wajib Zakat Harta (Mal).";
+                statusClass = "bg-green-100 border border-green-400 text-green-700";
+                isWajib = true;
+            } else {
+                // Zakat Tidak Wajib
+                zakatDue = 0;
+                statusMessage = "Nisab Belum Tercapai. Zakat Mal Tidak Wajib untuk saat ini.";
+                statusClass = "bg-yellow-100 border border-yellow-400 text-yellow-700";
+            }
+
+            // 3. Tampilkan Hasil
+            
+            // Tampilkan Nisab
+            nisabValueSpan.textContent = formatRupiah(nisabValue);
+
+            // Tampilkan Zakat yang Wajib Dibayarkan
+            zakatDueSpan.textContent = formatRupiah(zakatDue);
+            
+            // Tampilkan Status
+            zakatStatusDiv.innerHTML = `<span class="font-bold">${statusMessage}</span>`;
+            zakatStatusDiv.className = `p-4 rounded-lg text-center mb-4 ${statusClass}`;
+            
+            // Tampilkan area hasil
+            resultsDiv.classList.remove('hidden');
+
+            // Beri sedikit animasi scroll ke hasil
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
