@@ -1,6 +1,8 @@
 body {
   font-family: Arial, sans-serif;
-  background: #f4f6f8;
+  background: url("https://cdn.pixabay.com/photo/2018/10/28/16/11/volcano-3779159_1280.jpg");
+  background-position: center;
+  background-size: cover;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -68,5 +70,6 @@ footer {
   padding: 20px;
   text-align: center;
   font-size: 14px;
-  color: #555;
+  color: #040404;
+  font-weight: bold;
 }
