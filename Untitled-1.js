@@ -26,5 +26,22 @@ document.getElementById("zakatForm").addEventListener("submit", function(e) {
     `;
   }
 
+    document.getElementById("hasil").innerHTML = hasilText `
+  <div class="hadist>
+    <h3>📜 Hadist Tentang Zakat </h3>
+    <p><em>
+    Rasululullah SAW bersabda:
+    "Islam dibangun atas lima perkara, yaitu bersaksi bahwa tiada Tuhan selain Allah
+    dan Muhammad adalah utusan Allah, mendirikan sholat, menunaikan zakat, berpuasa di bulan ramadhan,
+    dan menunaikan haji bagi yang mampu."
+    (HR. Bukhari dan Muslim)
+    </em></p>
+    <p><strong>Artinya:</strong>
+    "Zakat adalah salah satu rukun islam yang wajib bagi setiap muslim yang mampu,
+    untuk membersihkan harta dan membantu sesama,"
+    </p>
+  </div>  
+  `;
   document.getElementById("hasil").innerHTML = hasilText;
 });
+
