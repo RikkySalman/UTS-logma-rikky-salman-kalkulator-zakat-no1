@@ -1,20 +1,40 @@
+const menuButton = document.getElementById("menuButton");
+const menu = document.getElementById("menu");
+
+menuButton.addEventListener("click", () => {
+  menu.hidden = !menu.hidden;
+});
+
+menu.querySelectorAll("li").forEach(item => {
+  item.addEventListener("click", () => {
+    const pilihan = item.textContent.trim();
+    menu.hidden = true; 
+
+    if (pilihan === "Emas") {
+      alert("Anda memilih zakat emas 💰");
+    } else if (pilihan === "PERTANIAN") {
+      alert("Anda memilih zakat pertanian 🌾");
+    } else if (pilihan === "PENGHASILAN") {
+      alert("Anda memilih zakat penghasilan 💼");
+    }
+  });
+});
+
 document.getElementById("zakatForm").addEventListener("submit", function (e) {
   e.preventDefault();
 
-  // --- Ambil data dari input ---
-  const harta = parseFloat(document.getElementById("harta").value);
-  const hutang = parseFloat(document.getElementById("hutang").value);
-  const hargaEmas = parseFloat(document.getElementById("hargaEmas").value);
+  const harta = parseFloat(document.getElementById("harta").value.replace(/\./g, ""));
+  const hutang = parseFloat(document.getElementById("hutang").value.replace(/\./g, ""));
+  const hargaEmas = parseFloat(document.getElementById("hargaEmas").value.replace(/\./g, ""));
 
-  // --- Validasi input ---
   if (isNaN(harta) || isNaN(hutang) || isNaN(hargaEmas)) {
     alert("Pastikan semua kolom diisi dengan angka yang valid.");
     return;
   }
 
-  // --- Perhitungan zakat ---
   const totalBersih = harta - hutang;
-  const nisab = 85 * hargaEmas; // Nisab = 85 gram emas
+  const nisab = 85 * hargaEmas; 
+  const jumlahEmas = totalBersih / hargaEmas; 
   let zakat = 0;
   let hasilText = "";
 
@@ -46,25 +66,27 @@ document.getElementById("zakatForm").addEventListener("submit", function (e) {
     `;
   }
 
-  // --- Tambahkan hadis ---
-  hasilText += `
-    <div class="hadist-box" style="margin-top:15px; background:#fff; padding:10px; border-radius:8px;">
-      <h3>📜 Hadis Tentang Zakat</h3>
-      <p><em>
-        Rasulullah SAW bersabda:
-        "Islam dibangun atas lima perkara, yaitu bersaksi bahwa tiada Tuhan selain Allah
-        dan Muhammad adalah utusan Allah, mendirikan shalat, menunaikan zakat,
-        berpuasa di bulan Ramadan, dan menunaikan haji bagi yang mampu."
-        (HR. Bukhari dan Muslim)
-      </em></p>
-      <p><strong>Artinya:</strong>
-        Zakat adalah salah satu rukun Islam yang wajib bagi setiap muslim yang mampu,
-        untuk membersihkan harta dan membantu sesama.
+  let argumenLogis = "";
+  if (jumlahEmas >= 85) {
+    argumenLogis = `
+      <p style="margin-top:10px; background:#e0ffe0; padding:10px; border-radius:8px;">
+        💡 <strong>Argumen Logis:</strong> Saat ini Anda diwajibkan untuk mengeluarkan zakat
+        karena Anda mempunyai simpanan sebesar <strong>${jumlahEmas.toFixed(2)} gram emas</strong>,
+        yang telah mencapai atau melebihi nisab (85 gram emas).
       </p>
-    </div>
-  `;
+    `;
+  } else {
+    argumenLogis = `
+      <p style="margin-top:10px; background:#ffe0e0; padding:10px; border-radius:8px;">
+        💡 <strong>Argumen Logis:</strong> Saat ini Anda <strong>belum diwajibkan</strong> untuk mengeluarkan zakat
+        karena total harta bersih Anda baru setara dengan <strong>${jumlahEmas.toFixed(2)} gram emas</strong>,
+        belum mencapai nisab sebesar 85 gram emas.
+      </p>
+    `;
+  }
+  hasilText += argumenLogis;
 
-  // --- Tambahkan penjelasan hukum logika ---
+
   hasilText += `
     <div class="logika" style="margin-top:15px; background:#f5f5f5; padding:10px; border-radius:8px;">
       <p>
@@ -79,15 +101,13 @@ document.getElementById("zakatForm").addEventListener("submit", function (e) {
     </div>
   `;
 
-  // --- Tampilkan hasil di halaman ---
   const hasilEl = document.getElementById("hasil");
   hasilEl.innerHTML = hasilText;
 
-  // --- Trigger ulang animasi setiap kali tombol ditekan ---
   const tableEl = hasilEl.querySelector(".animated-table");
   if (tableEl) {
     tableEl.classList.remove("slide-in");
-    void tableEl.offsetWidth; // paksa reflow
+    void tableEl.offsetWidth;
     tableEl.classList.add("slide-in");
   }
 });
